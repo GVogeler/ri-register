@@ -15,18 +15,63 @@
     <!-- Skript zur Konversion des Regesten-XML der Regesta Imperii in RDF
         Georg Vogeler <georg.vogeler@uni-graz.at>
         Zentrum für Informationsmodellierung - Austrian Centre for Digital Humanities, Universität Graz
-        Version: 2014-12-04 -->
+        Version: 2014-12-05 
+    
+        Pläne:
+        *. alle Dokumente in TEI umwandeln
+        *. Projekt ri in der GAMS (Benutzer, Projektumgebung)
+        *. XSL auf TEI anpassen und als gams.TORDF 
+            a. RDF standardisierter machen ('mentioned', VID für issuer und receipient)
+            b. RDF expressiver machen
+        *. TEI-Dokumente in GAMS ingestieren
+        *. Anzeigeschemata, insbesondere Suche
+            a. Inferieren
+            b. Kontextnavigation über RDF (Person/Ort ist related mit)
+        *. NER Tools ausprobieren, um die Registereinträge in Personen- und Ortseinträge zu differenzieren.
+    -->
     <xsl:output indent="yes" method="xml" encoding="UTF-8" />
     <!-- Die beiden Variablen bestimmen den Dateinamen der TEI-Quelle für die Regestenliste und den Dateinamen des daraus erzeugten RDF. Es wird davon ausgegangen, daß die TEI-Quelle im selben Verzeichnis wie die Registerdatei liegt.  -->
     <xsl:variable name="kopfzeilen-tei">RI13_Kopfzeilen.xml</xsl:variable>
     <xsl:variable name="regesten-rdf">regesten.rdf</xsl:variable>
+    <xsl:variable name="input-xml">
+        <file>a.xml</file>
+        <file>b.xml</file>
+        <file>c.xml</file>
+        <file>d.xml</file>
+        <file>e.xml</file>
+        <file>f.xml</file>
+        <file>g.xml</file>
+        <file>h.xml</file>
+        <file>i.xml</file>
+        <file>j.xml</file>
+        <file>k.xml</file>
+        <file>l.xml</file>
+        <file>m.xml</file>
+        <file>n.xml</file>
+        <file>o.xml</file>
+        <file>p.xml</file>
+        <file>q.xml</file>
+        <file>r.xml</file>
+        <file>s.xml</file>
+        <file>t.xml</file>
+        <file>u.xml</file>
+        <file>v.xml</file>
+        <file>w.xml</file>
+        <file>x.xml</file>
+        <file>y.xml</file>
+        <file>z.xml</file>
+    </xsl:variable>
 
     <xsl:template match="/">
         <rdf:RDF>
             <!-- 
-            Hinweis: die erste Zeile dient dazu, aus der TEI-Konversion der Regestenkopftabelle RDF zu machen. Das resultierende RDF muß dann für die Abarbeitung der zweiten Anweisung vorhanden sein. -->
+            Hinweis: die zweite Aktion dient dazu, aus der TEI-Konversion der Regestenkopftabelle RDF zu machen. Das resultierende RDF muß dann für die Abarbeitung der zweiten Anweisung vorhanden sein. -->
             <xsl:choose>
-                <xsl:when test="document($regesten-rdf)"><xsl:apply-templates select="//*[starts-with(name(),'Stufe')]"/></xsl:when>
+                <xsl:when test="document($regesten-rdf)">
+                    <xsl:for-each select="$input-xml/file">
+                        <xsl:apply-templates select="document(string(.))//*[starts-with(name(),'Stufe')]"/>
+                    </xsl:for-each>
+                </xsl:when>
                 <xsl:otherwise><xsl:result-document href="{$regesten-rdf}"><rdf:RDF><xsl:apply-templates select="document($kopfzeilen-tei)//t:body/t:table[1]//t:row"/></rdf:RDF></xsl:result-document>
                     <xsl:comment><xsl:value-of select="$regesten-rdf"/> aus <xsl:value-of select="$kopfzeilen-tei"/> erzeugt. Bitte führen Sie das Skript noch einmal aus, um das Register in RDF umzuwandeln.</xsl:comment>
                 </xsl:otherwise></xsl:choose>
@@ -74,7 +119,7 @@
         <xsl:value-of select="normalize-space(.)"/>
     </xsl:template>
     <xsl:template match="Kursivtext">
-        <xsl:copy-of select="."/>
+        <xsl:text> </xsl:text><xsl:copy-of select="."/>
     </xsl:template>
     <!-- 
         Hier die eigentlichen Regestennummern
